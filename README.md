@@ -1,6 +1,8 @@
 # LFIre
 A tool which detects Local File Inclusion vulnerability, exploits it and spawns a shell.
 
+## DEMO: [https://www.youtube.com/watch?v=METeQO3Kyuk](https://www.youtube.com/watch?v=METeQO3Kyuk)
+
 ## Why I built this?
 Back when I was getting started with web application security and learned about Local File Inclusion attack, I decide to automate the whole process to avoid manually checking for file inclusion at each level. So I created this tool.
 
